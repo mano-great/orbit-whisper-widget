@@ -8,3 +8,6 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+# AGENTS.md
+- Local Python server integration lives only in src/lib/island-bridge.ts (WebSocket stream + voice state); keeps the widget UI decoupled from transport.
