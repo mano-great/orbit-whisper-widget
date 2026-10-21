@@ -29,7 +29,7 @@ const seed: Msg[] = [
 ];
 
 const stateLabel: Record<VoiceState, string> = {
-  idle: "Ready",
+  idle: "Ready To Dive Into It?",
   listening: "Listening…",
   thinking: "Thinking…",
   speaking: "Speaking",
