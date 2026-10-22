@@ -131,16 +131,17 @@
   100% { transform: translateY(0) rotate(360deg) scale(.95); border-radius: 44% 56% 58% 42%; }
 }
 @property --ring-angle { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
-.island-ring { position: relative; }
+.island-ring { position: relative; animation: ring-glow 3s linear infinite; }
+@keyframes ring-glow { 0%,100% { box-shadow: var(--shadow-island), 0 0 18px -4px var(--voice-cyan); } 14% { box-shadow: var(--shadow-island), 0 0 18px -4px var(--voice-mint); } 28% { box-shadow: var(--shadow-island), 0 0 18px -4px var(--voice-gold); } 42% { box-shadow: var(--shadow-island), 0 0 18px -4px var(--voice-coral); } 57% { box-shadow: var(--shadow-island), 0 0 18px -4px var(--voice-rose); } 71% { box-shadow: var(--shadow-island), 0 0 18px -4px var(--voice-violet); } 85% { box-shadow: var(--shadow-island), 0 0 18px -4px var(--voice-blue); } }
 .island-ring::before {
   content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1.5px; pointer-events: none; z-index: 1;
   background: conic-gradient(from var(--ring-angle), var(--voice-cyan), var(--voice-mint), var(--voice-gold), var(--voice-coral), var(--voice-rose), var(--voice-violet), var(--voice-blue), var(--voice-cyan));
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude;
-  animation: ring-spin 4s linear infinite, voice-hue 6s linear infinite;
+  animation: ring-spin 2.5s linear infinite, voice-hue 3s linear infinite;
   opacity: calc(.75 + var(--level, 0) * .25);
 }
 @keyframes ring-spin { to { --ring-angle: 360deg; } }
 @media (prefers-reduced-motion: reduce) {
-  .voice-core, .voice-aura, .island-ring::before { animation: none !important; }
+  .voice-core, .voice-aura, .island-ring, .island-ring::before { animation: none !important; }
   .island, .island > div { transition: none !important; }
 }
