@@ -162,90 +162,49 @@
   .island, .island > div { transition: none !important; }
 }
 
-.mascot-button { width: 32px; height: 32px; padding: 0; flex-shrink: 0; background: none; overflow: visible; }
+/* The motion director owns joint transforms; CSS only draws the puppet. */
+.mascot-button { width: 34px; height: 34px; padding: 0; flex-shrink: 0; background: none; overflow: visible; }
 .mascot-button:hover { background: none; }
 .mascot-button[data-flying="true"] > span { opacity: 0; }
 .mascot-rest, .mascot-recoil, .mascot-art { display: block; position: relative; width: 100%; height: 100%; }
 .mascot-art img { position: absolute; inset: 0; width: 100%; height: 100%; user-select: none; pointer-events: none; }
-.puppet-body { position: absolute; inset: 0; transform-origin: 50% 85%; animation: puppet-breathe 3s ease-in-out infinite; }
-.puppet-torso { position: absolute; left: 32%; top: 57%; width: 38%; height: 29%; }
-.puppet-neck { position: absolute; left: 9%; top: 11%; width: 82%; height: 54%; transform-origin: 50% 90%; transform: rotate(var(--head-x, 0deg)) rotateX(var(--head-y, 0deg)); transition: transform 120ms ease-out; }
-.puppet-head { display: block; position: absolute; inset: 0; transform-origin: 50% 90%; animation: puppet-head-idle 4s ease-in-out infinite; }
-.puppet-ears { position: absolute; left: 8%; top: -18%; width: 51%; height: 44%; transform-origin: 45% 90%; animation: puppet-ear 3s ease-in-out infinite; }
-.puppet-arm { position: absolute; top: 61%; width: 15%; height: 17%; transform-origin: 50% 12%; }
-.puppet-arm-left { left: 25%; animation: puppet-arm-idle 3s ease-in-out infinite; }
-.puppet-arm-right { right: 25%; animation: puppet-arm-idle 3s ease-in-out -1.5s infinite reverse; }
-.puppet-elbow { position: absolute; left: 0; top: 65%; width: 100%; height: 95%; transform-origin: 50% 10%; animation: puppet-elbow-idle 3s ease-in-out infinite; }
-.puppet-hand { position: absolute; left: -12%; top: 65%; width: 125%; height: 75%; transform-origin: 50% 10%; animation: puppet-wrist 2.5s ease-in-out infinite; }
-.puppet-leg { position: absolute; top: 79%; width: 16%; height: 11%; transform-origin: 50% 10%; animation: puppet-hip 3s ease-in-out infinite; }
-.puppet-leg-left { left: 34%; }
-.puppet-leg-right { right: 33%; animation-delay: -1.5s; }
-.puppet-knee { position: absolute; left: 0; top: 60%; width: 100%; height: 75%; transform-origin: 50% 10%; animation: puppet-knee 3s ease-in-out infinite; }
-.puppet-foot { position: absolute; left: -13%; top: 45%; width: 125%; height: 80%; transform-origin: 50% 20%; animation: puppet-ankle 3s ease-in-out infinite; }
+.puppet-body { position: absolute; inset: 0; transform-origin: 50% 91%; }
+.puppet-torso { position: absolute; left: 30%; top: 56%; width: 40%; height: 30%; }
+.puppet-neck { position: absolute; left: 13%; top: 13%; width: 74%; height: 49%; transform-origin: 50% 90%; }
+.puppet-head { display: block; position: absolute; inset: 0; transform-origin: 50% 90%; }
+.puppet-ears { position: absolute; left: 8%; top: -21%; width: 48%; height: 47%; transform-origin: 45% 90%; }
+.puppet-arm { position: absolute; top: 60%; width: 13%; height: 15%; transform-origin: 50% 12%; }
+.puppet-arm-left { left: 25%; }
+.puppet-arm-right { right: 25%; }
+.puppet-elbow { position: absolute; left: 0; top: 65%; width: 100%; height: 85%; transform-origin: 50% 10%; }
+.puppet-hand { position: absolute; left: -12%; top: 65%; width: 125%; height: 78%; transform-origin: 50% 10%; }
+.puppet-leg { position: absolute; top: 77%; width: 17%; height: 13%; transform-origin: 50% 10%; }
+.puppet-leg-left { left: 32%; }
+.puppet-leg-right { right: 32%; }
+.puppet-knee { position: absolute; left: 1%; top: 45%; width: 98%; height: 75%; transform-origin: 50% 10%; }
+.puppet-foot { position: absolute; left: -9%; top: 35%; width: 118%; height: 90%; transform-origin: 50% 20%; }
 .mascot-face { position: absolute; left: 16%; top: 30%; width: 68%; height: 46%; }
-.mascot-eye { position: absolute; top: 33%; width: 16%; height: 30%; background: var(--mascot-ink); border-radius: 50%; transform: translate(var(--gaze-x, 0%), var(--gaze-y, 0%)); transition: transform 90ms ease-out; animation: puppet-blink 5s infinite; }
-.mascot-eye-left { left: 16%; }
-.mascot-eye-right { right: 9%; }
-.mascot-eye i { position: absolute; width: 23%; height: 23%; top: 15%; left: 24%; background: var(--mascot-eye-shine); border-radius: 50%; }
-.mascot-mouth { position: absolute; left: 43%; top: 75%; width: 22%; height: 20%; border-bottom: 1px solid var(--mascot-ink); border-radius: 0 0 50% 50%; }
-.mascot-art[data-speaking="true"] .mascot-mouth { background: var(--mascot-ink); animation: mascot-talk 180ms ease-in-out infinite alternate; }
+.mascot-eye { position: absolute; top: 33%; width: 16%; height: 30%; background: var(--mascot-ink); border-radius: 50%; transform: translate(var(--gaze-x, 0%), var(--gaze-y, 0%)); transform-origin: center; }
+.mascot-eye-left { left: 17%; }
+.mascot-eye-right { right: 17%; }
+.mascot-eye i { position: absolute; width: 26%; height: 26%; top: 14%; left: 24%; background: var(--mascot-eye-shine); border-radius: 50%; }
+.mascot-brow { position: absolute; top: 18%; width: 20%; height: 7%; border-top: 1px solid var(--mascot-ink); border-radius: 50%; opacity: .75; }
+.mascot-brow-left { left: 14%; }
+.mascot-brow-right { right: 14%; }
+.mascot-cheek { position: absolute; top: 65%; width: 23%; height: 20%; border-radius: 50%; background: var(--voice-coral); opacity: .28; filter: blur(.5px); }
+.mascot-cheek-left { left: 2%; }
+.mascot-cheek-right { right: 2%; }
+.mascot-mouth { position: absolute; left: 37%; top: 73%; width: 26%; height: 20%; border-bottom: 1px solid var(--mascot-ink); border-radius: 0 0 50% 50%; transform-origin: center; }
+.mascot-art[data-speaking="true"] .mascot-mouth { background: var(--mascot-ink); border-radius: 30% 30% 50% 50%; }
 .mascot-art[data-crying="true"] .mascot-eye { height: 12%; top: 44%; transform: rotate(-12deg); }
 .mascot-art[data-crying="true"] .mascot-eye-right { transform: rotate(12deg); }
 .mascot-art[data-crying="true"] .mascot-eye i { display: none; }
 .mascot-art[data-crying="true"] .mascot-mouth { top: 74%; background: var(--mascot-ink); border-radius: 50% 50% 20% 20%; height: 23%; }
-.mascot-tear { position: absolute; top: 50%; width: 13%; height: 45%; background: var(--mascot-tear); border-radius: 40% 40% 60% 60%; animation: mascot-tears 700ms ease-in infinite; }
+.mascot-tear { position: absolute; top: 50%; width: 13%; height: 45%; background: var(--mascot-tear); border-radius: 40% 40% 60% 60%; animation: mascot-tears 900ms ease-in infinite; }
 .mascot-tear-left { left: 20%; }
-.mascot-tear-right { right: 12%; animation-delay: 200ms; }
-.mascot-recoil .puppet-head { animation: mascot-recoil 450ms ease-out, puppet-head-idle 4s 450ms ease-in-out infinite; }
-.mascot-recoil .puppet-arm { animation: puppet-startle 450ms ease-out, puppet-arm-idle 3s 450ms ease-in-out infinite; }
-.mascot-recoil .puppet-ears { animation: puppet-ear-flinch 600ms ease-out, puppet-ear 3s 600ms ease-in-out infinite; }
-.mascot-art[data-speaking="true"] .puppet-head { animation: puppet-speaking 650ms ease-in-out infinite; }
-.mascot-art[data-speaking="true"] .puppet-arm-right { animation: puppet-wave-shoulder 1.1s ease-in-out infinite; }
-.mascot-art[data-speaking="true"] .puppet-arm-right .puppet-elbow { animation: puppet-wave-elbow 450ms ease-in-out infinite alternate; }
-.mascot-art[data-speaking="true"] .puppet-arm-left { animation: puppet-gesture 900ms ease-in-out infinite; }
-.mascot-art[data-speaking="true"] .puppet-hand { animation: puppet-wave-wrist 400ms ease-in-out infinite alternate; }
-.mascot-art[data-crying="true"] .puppet-body { animation: puppet-sob 350ms ease-in-out infinite; }
-.mascot-art[data-crying="true"] .puppet-head { animation: puppet-sob-head 450ms ease-in-out infinite; }
-.mascot-art[data-crying="true"] .puppet-arm-left { animation: puppet-wipe 1.2s ease-in-out infinite; }
-.mascot-art[data-crying="true"] .puppet-arm-left .puppet-elbow { animation: puppet-wipe-elbow 1.2s ease-in-out infinite; }
-.mascot-art[data-crying="true"] .puppet-arm-right { animation: puppet-flail 500ms ease-in-out infinite alternate; }
-.mascot-flight .puppet-leg { animation: puppet-run 300ms ease-in-out infinite alternate; }
-.mascot-flight .puppet-leg-right { animation-delay: -300ms; }
-.mascot-flight .puppet-knee { animation: puppet-run-knee 300ms ease-in-out infinite alternate; }
-.mascot-flight[data-phase="impact"] .puppet-arm-left { animation: none; transform: rotate(100deg); }
-.mascot-flight[data-phase="impact"] .puppet-arm-right { animation: none; transform: rotate(-100deg); }
-.mascot-flight[data-phase="impact"] .puppet-elbow { animation: none; transform: rotate(0deg); }
-.mascot-flight[data-phase="impact"] .puppet-hand { animation: none; transform: scale(1.5); }
-.mascot-flight[data-phase="fall"] .puppet-arm { animation: puppet-flail 180ms ease-in-out infinite alternate; }
-.mascot-flight[data-phase="fall"] .puppet-ears { animation: puppet-ear-flinch 300ms infinite; }
+.mascot-tear-right { right: 20%; animation-delay: 300ms; }
 .mascot-flight { position: fixed; width: 48px; height: 48px; z-index: 100; pointer-events: none; transform-origin: center; }
-@keyframes mascot-talk { from { transform: scaleY(.3); } to { transform: scaleY(1.4); } }
-@keyframes mascot-tears { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(90%); } }
-@keyframes mascot-recoil { 0%,100% { transform: rotate(0); } 20% { transform: translateY(2px) rotate(-24deg); } 45% { transform: rotate(16deg); } 70% { transform: rotate(-7deg); } }
-@keyframes puppet-breathe { 0%,100% { transform: translateY(0) scaleY(1); } 50% { transform: translateY(-1%) scaleY(1.025); } }
-@keyframes puppet-head-idle { 0%,100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg) translateY(-1%); } }
-@keyframes puppet-ear { 0%,100% { transform: rotate(-4deg); } 50% { transform: rotate(5deg); } }
-@keyframes puppet-arm-idle { 0%,100% { transform: rotate(12deg); } 50% { transform: rotate(-9deg); } }
-@keyframes puppet-elbow-idle { 0%,100% { transform: rotate(5deg); } 50% { transform: rotate(-12deg); } }
-@keyframes puppet-wrist { 0%,100% { transform: rotate(-8deg); } 50% { transform: rotate(8deg); } }
-@keyframes puppet-hip { 0%,100% { transform: rotate(-3deg); } 50% { transform: rotate(4deg); } }
-@keyframes puppet-knee { 0%,100% { transform: rotate(0deg); } 50% { transform: rotate(8deg); } }
-@keyframes puppet-ankle { 0%,100% { transform: rotate(-4deg); } 50% { transform: rotate(5deg); } }
-@keyframes puppet-blink { 0%,43%,47%,100% { scale: 1 1; } 45% { scale: 1 .12; } }
-@keyframes puppet-speaking { 0%,100% { transform: rotate(-5deg) translateY(0); } 50% { transform: rotate(5deg) translateY(-3%); } }
-@keyframes puppet-wave-shoulder { 0%,100% { transform: rotate(-105deg); } 50% { transform: rotate(-135deg); } }
-@keyframes puppet-wave-elbow { from { transform: rotate(-15deg); } to { transform: rotate(-60deg); } }
-@keyframes puppet-wave-wrist { from { transform: rotate(-20deg); } to { transform: rotate(25deg); } }
-@keyframes puppet-gesture { 0%,100% { transform: rotate(15deg); } 50% { transform: rotate(55deg); } }
-@keyframes puppet-startle { 0%,100% { transform: rotate(0); } 25% { transform: rotate(65deg); } 55% { transform: rotate(-25deg); } }
-@keyframes puppet-ear-flinch { 0%,100% { transform: rotate(0); } 30% { transform: rotate(-25deg); } 60% { transform: rotate(20deg); } }
-@keyframes puppet-sob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(2%) scaleY(.96); } }
-@keyframes puppet-sob-head { 0%,100% { transform: rotate(-8deg); } 50% { transform: rotate(8deg) translateY(2%); } }
-@keyframes puppet-wipe { 0%,100% { transform: rotate(130deg); } 50% { transform: rotate(155deg); } }
-@keyframes puppet-wipe-elbow { 0%,100% { transform: rotate(45deg); } 50% { transform: rotate(75deg); } }
-@keyframes puppet-flail { from { transform: rotate(-70deg); } to { transform: rotate(55deg); } }
-@keyframes puppet-run { from { transform: rotate(-25deg); } to { transform: rotate(30deg); } }
-@keyframes puppet-run-knee { from { transform: rotate(0); } to { transform: rotate(-45deg); } }
+@keyframes mascot-tears { from { opacity: 1; transform: translateY(0) scale(.7); } to { opacity: 0; transform: translateY(100%) scale(1); } }
 @media (prefers-reduced-motion: reduce) {
-  .mascot-art *, .mascot-recoil { animation: none !important; transition: none !important; }
+  .mascot-art * { animation: none !important; transition: none !important; }
 }

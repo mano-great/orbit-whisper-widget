@@ -7,12 +7,14 @@ import ears from "@/assets/mascot-ears.png";
 import thigh from "@/assets/mascot-thigh.png";
 import shin from "@/assets/mascot-shin.png";
 import foot from "@/assets/mascot-foot.png";
+import { usePuppetMotion } from "@/lib/use-puppet-motion";
 
 const sprite = (src: string) => <img src={src} alt="" draggable={false} />;
 
 /** Nested joints keep elbows, wrists, knees and ankles attached while moving. */
-export function MascotPuppet({ crying, speaking }: { crying: boolean; speaking: boolean }) {
-  return <span className="mascot-art" data-crying={crying} data-speaking={speaking} role="img" aria-label="Orange assistant character">
+export function MascotPuppet({ crying, speaking, hurt = false }: { crying: boolean; speaking: boolean; hurt?: boolean }) {
+  const ref = usePuppetMotion(speaking, crying, hurt);
+  return <span ref={ref} className="mascot-art" data-crying={crying} data-speaking={speaking} role="img" aria-label="Orange assistant character">
     <span className="puppet-body">
       {(["left", "right"] as const).map((side) => <span key={side} className={`puppet-leg puppet-leg-${side}`}>
         {sprite(thigh)}
@@ -27,6 +29,8 @@ export function MascotPuppet({ crying, speaking }: { crying: boolean; speaking: 
         {sprite(head)}
         <span className="puppet-ears">{sprite(ears)}</span>
         <span className="mascot-face" aria-hidden="true">
+          <span className="mascot-brow mascot-brow-left" /><span className="mascot-brow mascot-brow-right" />
+          <span className="mascot-cheek mascot-cheek-left" /><span className="mascot-cheek mascot-cheek-right" />
           <span className="mascot-eye mascot-eye-left"><i /></span>
           <span className="mascot-eye mascot-eye-right"><i /></span>
           <span className="mascot-mouth" />

@@ -74,11 +74,14 @@ export function NotchMascot({ onGreeting, aiSpeaking = false }: { onGreeting: (t
     const motion = element.animate(reduced ? [
       { opacity: 0 }, { opacity: 1 }, { opacity: 0 },
     ] : [
-      { transform: "translate(0, 0) scale(1)", offset: 0 },
-      { transform: `translate(${dx}px, ${dy}px) scale(1.3)`, offset: 0.2 },
-      { transform: `translate(${dx}px, ${dy}px) scale(${scale})`, offset: 0.5 },
-      { transform: `translate(${dx}px, ${dy}px) scale(${scale * 1.12}, ${scale * 0.8})`, offset: 0.54 },
-      { transform: `translate(${dx}px, ${Math.min(dy + 160, window.innerHeight - flight.y - 90)}px) rotate(24deg) scale(${scale * 0.55})`, offset: 0.72 },
+      { transform: "translate(0, 0) scale(1)", offset: 0, easing: "ease-out" },
+      { transform: "translate(0, 4px) scale(1.12,.82)", offset: .08, easing: "cubic-bezier(.2,0,.7,1)" },
+      { transform: `translate(${dx * .4}px, ${dy * .3}px) rotate(-8deg) scale(.7)`, offset: .2, easing: "cubic-bezier(.55,0,.9,.55)" },
+      { transform: `translate(${dx}px, ${dy}px) scale(${scale})`, offset: .49, easing: "ease-out" },
+      { transform: `translate(${dx}px, ${dy}px) scale(${scale * 1.13}, ${scale * .86})`, offset: .53, easing: "ease-out" },
+      { transform: `translate(${dx}px, ${dy - 20}px) rotate(-6deg) scale(${scale * .92})`, offset: .59, easing: "ease-in" },
+      { transform: `translate(${dx + 35}px, ${Math.min(dy + 170, window.innerHeight - flight.y - 90)}px) rotate(32deg) scale(${scale * .6})`, offset: .74, easing: "cubic-bezier(.15,.75,.2,1)" },
+      { transform: "translate(-7px,-8px) rotate(-12deg) scale(1.1)", offset: .94, easing: "ease-out" },
       { transform: "translate(0, 0) rotate(0) scale(1)", offset: 1 },
     ], { duration: reduced ? 1000 : 4300, easing: "ease-in-out", fill: "forwards" });
     motion.onfinish = () => {
@@ -111,7 +114,7 @@ export function NotchMascot({ onGreeting, aiSpeaking = false }: { onGreeting: (t
   return <>
     <Button ref={buttonRef} variant="ghost" size="icon" className="mascot-button" aria-label="Poke character" title="Poke character" onClick={(event) => { event.stopPropagation(); poke(); }} data-flying={Boolean(flight)}>
       <span key={recoil} className={recoil > 0 ? "mascot-recoil" : "mascot-rest"}>
-        <MascotPuppet crying={crying} speaking={speaking || aiSpeaking} />
+        <MascotPuppet crying={crying} speaking={speaking || aiSpeaking} hurt={recoil > 0} />
       </span>
     </Button>
     {flight && createPortal(<div ref={flightRef} className="mascot-flight" role="status" aria-label="Character crying, bumping the screen, and returning" style={{ left: flight.x, top: flight.y }}><MascotPuppet crying speaking={false} /></div>, document.body)}
