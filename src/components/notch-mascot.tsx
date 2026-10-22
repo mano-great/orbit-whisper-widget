@@ -54,7 +54,8 @@ export function NotchMascot({ onGreeting }: { onGreeting: (text: string | null) 
           }
         };
         speech.onend = finish;
-        speech.onerror = finish;
+        // Keep the visual greeting when the browser has no available voice.
+        speech.onerror = () => {};
         window.speechSynthesis.speak(speech);
       }
       // Boundary events aren't supported by every installed system voice.
