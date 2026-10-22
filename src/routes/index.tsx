@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { AudioLines, ChevronUp, Mic, MicOff, Volume2 } from "lucide-react";
+import { AudioLines, ChevronUp, Mic, MicOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { subscribeTextStream, subscribeVoiceState, type VoiceState } from "@/lib/island-bridge";
 
@@ -119,11 +119,8 @@ function Index() {
           {voiceMode ? (
             <div className="voice-stage flex min-h-0 flex-1 flex-col items-center justify-center gap-5" data-state={activeVoice}>
               <div className="voice-visual"><Avatar state={activeVoice} /></div>
-              <p className="text-sm text-muted-foreground" aria-live="polite">{activeVoice === "idle" ? "Voice mode" : activeVoice === "listening" ? "You’re speaking" : activeVoice === "speaking" ? "Island is speaking" : "Thinking…"}</p>
-              <div className="flex gap-2">
-                <Button variant="ghost" size="sm" aria-label="Preview your voice" title="Preview your voice" aria-pressed={previewVoice === "listening"} onClick={() => setPreviewVoice(previewVoice === "listening" ? null : "listening")}><Mic />Your voice</Button>
-                <Button variant="ghost" size="sm" aria-label="Preview AI voice" title="Preview AI voice" aria-pressed={previewVoice === "speaking"} onClick={() => setPreviewVoice(previewVoice === "speaking" ? null : "speaking")}><Volume2 />AI voice</Button>
-              </div>
+              <p className="text-sm text-muted-foreground" aria-live="polite">{activeVoice === "idle" ? "Voice mode" : activeVoice === "thinking" ? "Thinking…" : "Live conversation"}</p>
+              <Button variant="ghost" size="sm" aria-label="Preview live voice" title="Preview live voice" aria-pressed={previewVoice === "speaking"} onClick={() => setPreviewVoice(previewVoice === "speaking" ? null : "speaking")}><AudioLines />Live voice</Button>
             </div>
           ) : (
           <div ref={listRef} className="min-h-0 flex-1 space-y-2.5 overflow-y-auto px-4 pb-3 pt-2 [scrollbar-width:none]">
