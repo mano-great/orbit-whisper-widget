@@ -100,10 +100,12 @@
 @utility animate-speak { animation: speak 0.7s ease-in-out infinite; }
 
 .voice-avatar { position: relative; width: 20px; height: 20px; flex-shrink: 0; display: grid; place-items: center; }
-.voice-core, .voice-aura { position: absolute; width: 72%; height: 72%; background: var(--voice-seven); border-radius: 50%; animation: voice-float 5s ease-in-out infinite; transition: background .6s, opacity .6s; }
+@property --voice-angle { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+.voice-core, .voice-aura { position: absolute; width: 72%; height: 72%; background: conic-gradient(from var(--voice-angle), var(--voice-cyan), var(--voice-mint), var(--voice-gold), var(--voice-coral), var(--voice-rose), var(--voice-violet), var(--voice-blue), var(--voice-cyan)); border-radius: 50%; animation: voice-float 5s ease-in-out infinite, voice-spin 2.5s linear infinite; transition: opacity .6s; }
 .voice-aura { width: 100%; height: 100%; filter: blur(8px); opacity: .45; }
-.voice-avatar:not([data-state="idle"]) .voice-core, .voice-avatar:not([data-state="idle"]) .voice-aura { animation: voice-answer 2.2s ease-in-out infinite, voice-hue 7s linear infinite; }
-.voice-avatar[data-state="thinking"] .voice-core, .voice-avatar[data-state="thinking"] .voice-aura { animation: voice-float 1.8s ease-in-out infinite, voice-hue 3.5s linear infinite; }
+.voice-avatar:not([data-state="idle"]) .voice-core, .voice-avatar:not([data-state="idle"]) .voice-aura { animation: voice-answer 2.2s ease-in-out infinite, voice-hue 7s linear infinite, voice-spin 2s linear infinite; }
+.voice-avatar[data-state="thinking"] .voice-core, .voice-avatar[data-state="thinking"] .voice-aura { animation: voice-float 1.8s ease-in-out infinite, voice-hue 3.5s linear infinite, voice-spin 1.5s linear infinite; }
+@keyframes voice-spin { from { --voice-angle: 0deg; } to { --voice-angle: 360deg; } }
 @keyframes voice-hue { to { filter: hue-rotate(360deg); } }
 .voice-avatar:not([data-state="idle"]) .voice-aura { animation: voice-answer 2.2s ease-in-out infinite, voice-hue-blur 7s linear infinite; }
 @keyframes voice-hue-blur { from { filter: blur(8px) hue-rotate(0deg); } to { filter: blur(8px) hue-rotate(360deg); } }
@@ -145,6 +147,5 @@
 }
 @keyframes ring-rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) {
-  .voice-core, .voice-aura { animation: none !important; }
   .island, .island > div { transition: none !important; }
 }
