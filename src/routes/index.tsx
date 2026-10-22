@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { AudioLines, ChevronUp, Mic, MicOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useMicLevel } from "@/lib/use-mic-level";
 import { subscribeTextStream, subscribeVoiceState, type VoiceState } from "@/lib/island-bridge";
 
 export const Route = createFileRoute("/")({
@@ -51,7 +52,9 @@ function Index() {
   const [voice, setVoice] = useState<VoiceState>("idle");
   const [voiceMode, setVoiceMode] = useState(false);
   const [previewVoice, setPreviewVoice] = useState<VoiceState | null>(null);
-  const activeVoice = previewVoice ?? voice;
+  const islandRef = useRef<HTMLDivElement>(null);
+  const mic = useMicLevel(voiceMode, islandRef);
+  const activeVoice = previewVoice ?? (mic.talking && voice === "idle" ? "listening" : voice);
   const [msgs, setMsgs] = useState<Msg[]>(seed);
   const streaming = useRef<number | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
@@ -85,6 +88,7 @@ function Index() {
   return (
     <main className="flex min-h-screen justify-center px-3 pt-6">
       <div
+        ref={islandRef}
         onClick={() => !open && setOpen(true)}
         className="island overflow-hidden text-foreground"
         style={{
@@ -119,7 +123,7 @@ function Index() {
           {voiceMode ? (
             <div className="voice-stage flex min-h-0 flex-1 flex-col items-center justify-center gap-5" data-state={activeVoice}>
               <div className="voice-visual"><Avatar state={activeVoice} /></div>
-              <p className="text-sm text-muted-foreground" aria-live="polite">{activeVoice === "idle" ? "Voice mode" : activeVoice === "thinking" ? "Thinking…" : "Live conversation"}</p>
+              <p className="text-sm text-muted-foreground" aria-live="polite">{mic.error ? mic.error : activeVoice === "idle" ? "Start talking…" : activeVoice === "thinking" ? "Thinking…" : "Live conversation"}</p>
               <Button variant="ghost" size="sm" aria-label="Preview live voice" title="Preview live voice" aria-pressed={previewVoice === "speaking"} onClick={() => setPreviewVoice(previewVoice === "speaking" ? null : "speaking")}><AudioLines />Live voice</Button>
             </div>
           ) : (
