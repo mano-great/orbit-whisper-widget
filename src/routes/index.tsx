@@ -90,7 +90,7 @@ function Index() {
       <div
         ref={islandRef}
         onClick={() => !open && setOpen(true)}
-        className="island overflow-hidden text-foreground"
+        className="island island-ring overflow-hidden text-foreground"
         style={{
           width: open ? 380 : 190,
           maxWidth: "100%",
