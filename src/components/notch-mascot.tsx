@@ -88,7 +88,7 @@ export function NotchMascot({ onGreeting, aiSpeaking = false }: { onGreeting: (t
     let frame = 0;
     const pose = () => {
       const progress = Number(motion.currentTime ?? 0) / (reduced ? 1000 : 4300);
-      element.dataset.phase = progress < .5 ? "approach" : progress < .59 ? "impact" : progress < .75 ? "fall" : "return";
+      element.dataset["phase"] = progress < .5 ? "approach" : progress < .59 ? "impact" : progress < .75 ? "fall" : "return";
       if (motion.playState === "running") frame = requestAnimationFrame(pose);
     };
     frame = requestAnimationFrame(pose);
