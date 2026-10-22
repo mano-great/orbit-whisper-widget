@@ -62,6 +62,9 @@
   --voice-blue: oklch(0.68 0.18 255);
   --voice-rose: oklch(0.75 0.19 350);
   --voice-gold: oklch(0.88 0.14 85);
+  --voice-violet: oklch(0.7 0.18 300);
+  --voice-coral: oklch(0.75 0.17 35);
+  --voice-seven: conic-gradient(from 0deg, var(--voice-cyan), var(--voice-mint), var(--voice-gold), var(--voice-coral), var(--voice-rose), var(--voice-violet), var(--voice-blue), var(--voice-cyan));
   --voice-listening: conic-gradient(from 0deg, var(--voice-cyan), var(--voice-mint), var(--voice-blue), var(--voice-cyan));
   --voice-speaking: conic-gradient(from 0deg, var(--voice-blue), var(--voice-rose), var(--voice-gold), var(--voice-cyan), var(--voice-blue));
 }
@@ -97,11 +100,15 @@
 @utility animate-speak { animation: speak 0.7s ease-in-out infinite; }
 
 .voice-avatar { position: relative; width: 20px; height: 20px; flex-shrink: 0; display: grid; place-items: center; }
-.voice-core, .voice-aura { position: absolute; width: 72%; height: 72%; background: var(--voice-listening); border-radius: 50%; animation: voice-float 5s ease-in-out infinite; transition: background .6s, opacity .6s; }
+.voice-core, .voice-aura { position: absolute; width: 72%; height: 72%; background: var(--voice-seven); border-radius: 50%; animation: voice-float 5s ease-in-out infinite; transition: background .6s, opacity .6s; }
 .voice-aura { width: 100%; height: 100%; filter: blur(8px); opacity: .45; }
-.voice-avatar[data-state="speaking"] .voice-core, .voice-avatar[data-state="speaking"] .voice-aura { background: var(--voice-speaking); animation: voice-answer 2.4s ease-in-out infinite; }
-.voice-avatar[data-state="listening"] .voice-core, .voice-avatar[data-state="listening"] .voice-aura { animation: voice-listen 1.4s ease-in-out infinite; }
-.voice-avatar[data-state="thinking"] .voice-core, .voice-avatar[data-state="thinking"] .voice-aura { background: var(--voice-speaking); animation: voice-float 1.8s ease-in-out infinite; }
+.voice-avatar:not([data-state="idle"]) .voice-core, .voice-avatar:not([data-state="idle"]) .voice-aura { animation: voice-answer 2.2s ease-in-out infinite, voice-hue 7s linear infinite; }
+.voice-avatar[data-state="thinking"] .voice-core, .voice-avatar[data-state="thinking"] .voice-aura { animation: voice-float 1.8s ease-in-out infinite, voice-hue 3.5s linear infinite; }
+@keyframes voice-hue { to { filter: hue-rotate(360deg); } }
+.voice-avatar:not([data-state="idle"]) .voice-aura { animation: voice-answer 2.2s ease-in-out infinite, voice-hue-blur 7s linear infinite; }
+@keyframes voice-hue-blur { from { filter: blur(8px) hue-rotate(0deg); } to { filter: blur(8px) hue-rotate(360deg); } }
+.voice-visual .voice-avatar:not([data-state="idle"]) .voice-aura { animation-name: voice-answer, voice-hue-blur-lg; }
+@keyframes voice-hue-blur-lg { from { filter: blur(24px) hue-rotate(0deg); } to { filter: blur(24px) hue-rotate(360deg); } }
 .voice-visual { width: 190px; height: 190px; display: grid; place-items: center; }
 .voice-visual .voice-avatar { width: 132px; height: 132px; }
 .voice-visual .voice-aura { filter: blur(24px); opacity: .3; }
