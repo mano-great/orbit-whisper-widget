@@ -118,19 +118,28 @@
 .voice-visual .voice-core { box-shadow: inset 0 0 22px var(--bubble-ai); }
 .voice-stage [aria-pressed="true"] { background: var(--secondary); color: var(--foreground); }
 @keyframes voice-float {
-  0%, 100% { transform: translateY(0) rotate(0deg) scale(.92); border-radius: 47% 53% 54% 46%; }
-  50% { transform: translateY(-7px) rotate(90deg) scale(1); border-radius: 58% 42% 44% 56%; }
+  0%, 100% { transform: translateY(0) scale(.92); }
+  50% { transform: translateY(-7px) scale(1); }
 }
 @keyframes voice-listen {
-  0%, 100% { transform: scale(.87) rotate(0deg); border-radius: 48% 52% 43% 57%; }
-  45% { transform: scale(1.08) rotate(35deg); border-radius: 42% 58% 57% 43%; }
-  70% { transform: scale(.97) rotate(70deg); border-radius: 56% 44% 46% 54%; }
+  0%, 100% { transform: scale(.87); }
+  45% { transform: scale(1.08); }
+  70% { transform: scale(.97); }
 }
 @keyframes voice-answer {
-  0% { transform: translateY(0) rotate(0deg) scale(.95); border-radius: 44% 56% 58% 42%; }
-  33% { transform: translateY(-7px) rotate(120deg) scale(1.08); border-radius: 60% 40% 44% 56%; }
-  66% { transform: translateY(3px) rotate(240deg) scale(.94); border-radius: 42% 58% 60% 40%; }
-  100% { transform: translateY(0) rotate(360deg) scale(.95); border-radius: 44% 56% 58% 42%; }
+  0%, 100% { transform: translateY(0) scale(.95); }
+  33% { transform: translateY(-7px) scale(1.08); }
+  66% { transform: translateY(3px) scale(.94); }
+}
+[data-mic-active="true"] .voice-core,
+[data-mic-active="true"] .voice-aura {
+  animation: none !important;
+  --voice-angle: var(--mic-angle, 0deg);
+  border-radius: 50%;
+}
+[data-mic-active="true"] .island-ring-spin {
+  animation: none;
+  transform: rotate(var(--mic-angle, 0deg));
 }
 @property --ring-angle { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
 .island-ring { position: relative; animation: ring-glow 3s linear infinite; }
