@@ -100,6 +100,7 @@ function Index() {
           cursor: open ? "default" : "pointer",
         }}
       >
+        <span className="island-ring-frame" aria-hidden="true"><span className="island-ring-spin" /></span>
         <div className="flex h-10 items-center gap-3 px-3">
           <Avatar state={activeVoice} />
           <span className="flex-1 truncate text-xs font-medium text-muted-foreground">{stateLabel[activeVoice]}</span>

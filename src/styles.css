@@ -133,15 +133,18 @@
 @property --ring-angle { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
 .island-ring { position: relative; animation: ring-glow 3s linear infinite; }
 @keyframes ring-glow { 0%,100% { box-shadow: var(--shadow-island), 0 0 18px -4px var(--voice-cyan); } 14% { box-shadow: var(--shadow-island), 0 0 18px -4px var(--voice-mint); } 28% { box-shadow: var(--shadow-island), 0 0 18px -4px var(--voice-gold); } 42% { box-shadow: var(--shadow-island), 0 0 18px -4px var(--voice-coral); } 57% { box-shadow: var(--shadow-island), 0 0 18px -4px var(--voice-rose); } 71% { box-shadow: var(--shadow-island), 0 0 18px -4px var(--voice-violet); } 85% { box-shadow: var(--shadow-island), 0 0 18px -4px var(--voice-blue); } }
-.island-ring::before {
-  content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1.5px; pointer-events: none; z-index: 1;
-  background: conic-gradient(from var(--ring-angle), var(--voice-cyan), var(--voice-mint), var(--voice-gold), var(--voice-coral), var(--voice-rose), var(--voice-violet), var(--voice-blue), var(--voice-cyan));
+.island-ring-frame {
+  position: absolute; inset: 0; border-radius: inherit; padding: 2px; pointer-events: none; z-index: 1; overflow: hidden;
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude;
-  animation: ring-spin 2.5s linear infinite, voice-hue 3s linear infinite;
-  opacity: calc(.75 + var(--level, 0) * .25);
+  opacity: calc(.8 + var(--level, 0) * .2);
 }
-@keyframes ring-spin { to { --ring-angle: 360deg; } }
+.island-ring-spin {
+  position: absolute; left: 50%; top: 50%; width: 220%; aspect-ratio: 1; translate: -50% -50%;
+  background: conic-gradient(var(--voice-cyan), var(--voice-mint), var(--voice-gold), var(--voice-coral), var(--voice-rose), var(--voice-violet), var(--voice-blue), var(--voice-cyan));
+  animation: ring-rotate 2.5s linear infinite;
+}
+@keyframes ring-rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) {
-  .voice-core, .voice-aura, .island-ring, .island-ring::before { animation: none !important; }
+  .voice-core, .voice-aura { animation: none !important; }
   .island, .island > div { transition: none !important; }
 }
