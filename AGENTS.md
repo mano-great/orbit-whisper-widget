@@ -11,3 +11,4 @@
 
 # AGENTS.md
 - Local Python server integration lives only in src/lib/island-bridge.ts (WebSocket stream + voice state); keeps the widget UI decoupled from transport.
+- Voice visuals use CSS state-driven animation; local preview controls never capture microphone audio and incoming bridge events supersede previews.
