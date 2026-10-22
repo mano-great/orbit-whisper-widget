@@ -12,4 +12,4 @@
 # AGENTS.md
 - Local Python server integration lives only in src/lib/island-bridge.ts (WebSocket stream + voice state); keeps the widget UI decoupled from transport.
 - Voice visuals use one unified CSS state-driven seven-color animation for all speech; mic loudness drives scale via --level and continuously integrated orb/border rotation via --mic-angle without re-rendering, avoiding phase jumps; incoming bridge events supersede previews.
-- The notch mascot lives in its own component with a blank-face transparent asset and CSS facial overlays; browser speech starts on a user gesture and a portal lets reactions escape notch clipping without affecting voice visuals.
+- The notch mascot uses a nested sprite puppet with independent neck, shoulders, elbows, wrists, hips, knees, ankles, ears and facial overlays; joint transforms preserve attachment, while a portal allows screen reactions without changing voice visuals. Browser speech starts on a user gesture and incoming AI speaking state also animates the puppet.

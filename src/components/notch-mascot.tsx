@@ -1,22 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/button";
-import character from "@/assets/notch-character-blank.png";
+import { MascotPuppet } from "@/components/mascot-puppet";
 import { GREETING, nextPoke } from "@/lib/mascot-reactions";
 
-function Character({ crying, speaking }: { crying: boolean; speaking: boolean }) {
-  return <span className="mascot-art" data-crying={crying} data-speaking={speaking}>
-    <img src={character} alt="Orange assistant character" draggable={false} />
-    <span className="mascot-face" aria-hidden="true">
-      <span className="mascot-eye mascot-eye-left"><i /></span>
-      <span className="mascot-eye mascot-eye-right"><i /></span>
-      <span className="mascot-mouth" />
-      {crying && <><span className="mascot-tear mascot-tear-left" /><span className="mascot-tear mascot-tear-right" /></>}
-    </span>
-  </span>;
-}
-
-export function NotchMascot({ onGreeting }: { onGreeting: (text: string | null) => void }) {
+export function NotchMascot({ onGreeting, aiSpeaking = false }: { onGreeting: (text: string | null) => void; aiSpeaking?: boolean }) {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const flightRef = useRef<HTMLDivElement>(null);
   const count = useRef(0);
@@ -36,6 +24,8 @@ export function NotchMascot({ onGreeting }: { onGreeting: (text: string | null) 
       const y = Math.max(-1, Math.min(1, (event.clientY - rect.y - rect.height / 2) / 240));
       buttonRef.current?.style.setProperty("--gaze-x", `${x * 22}%`);
       buttonRef.current?.style.setProperty("--gaze-y", `${y * 18}%`);
+      buttonRef.current?.style.setProperty("--head-x", `${x * 9}deg`);
+      buttonRef.current?.style.setProperty("--head-y", `${y * -7}deg`);
     };
     // Browsers permit audible speech after a user gesture, not reliably on page load.
     const greet = () => {
@@ -95,7 +85,14 @@ export function NotchMascot({ onGreeting }: { onGreeting: (text: string | null) 
       setFlight(null);
       later(() => { setCrying(false); count.current = 0; }, 2200);
     };
-    return () => motion.cancel();
+    let frame = 0;
+    const pose = () => {
+      const progress = Number(motion.currentTime ?? 0) / (reduced ? 1000 : 4300);
+      element.dataset["phase"] = progress < .5 ? "approach" : progress < .59 ? "impact" : progress < .75 ? "fall" : "return";
+      if (motion.playState === "running") frame = requestAnimationFrame(pose);
+    };
+    frame = requestAnimationFrame(pose);
+    return () => { cancelAnimationFrame(frame); motion.cancel(); };
   }, [flight]);
 
   const poke = () => {
@@ -114,9 +111,9 @@ export function NotchMascot({ onGreeting }: { onGreeting: (text: string | null) 
   return <>
     <Button ref={buttonRef} variant="ghost" size="icon" className="mascot-button" aria-label="Poke character" title="Poke character" onClick={(event) => { event.stopPropagation(); poke(); }} data-flying={Boolean(flight)}>
       <span key={recoil} className={recoil > 0 ? "mascot-recoil" : "mascot-rest"}>
-        <Character crying={crying} speaking={speaking} />
+        <MascotPuppet crying={crying} speaking={speaking || aiSpeaking} />
       </span>
     </Button>
-    {flight && createPortal(<div ref={flightRef} className="mascot-flight" role="status" aria-label="Character crying, bumping the screen, and returning" style={{ left: flight.x, top: flight.y }}><Character crying speaking={false} /></div>, document.body)}
+    {flight && createPortal(<div ref={flightRef} className="mascot-flight" role="status" aria-label="Character crying, bumping the screen, and returning" style={{ left: flight.x, top: flight.y }}><MascotPuppet crying speaking={false} /></div>, document.body)}
   </>;
 }
