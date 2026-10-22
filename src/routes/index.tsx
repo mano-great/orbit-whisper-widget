@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { AudioLines, ChevronUp, Mic, MicOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import notchCharacter from "@/assets/notch-character.png";
+import { NotchMascot } from "@/components/notch-mascot";
 import { useMicLevel } from "@/lib/use-mic-level";
 import { subscribeTextStream, subscribeVoiceState, type VoiceState } from "@/lib/island-bridge";
 
@@ -33,7 +33,7 @@ const seed: Msg[] = [
 ];
 
 const stateLabel: Record<VoiceState, string> = {
-  idle: "Ready To Dive Into It?",
+  idle: "Ready to dive in",
   listening: "Listening…",
   thinking: "Thinking…",
   speaking: "Speaking",
@@ -50,6 +50,7 @@ function Avatar({ state }: { state: VoiceState }) {
 
 function Index() {
   const [open, setOpen] = useState(false);
+  const [greeting, setGreeting] = useState<string | null>(null);
   const [voice, setVoice] = useState<VoiceState>("idle");
   const [voiceMode, setVoiceMode] = useState(false);
   const [previewVoice, setPreviewVoice] = useState<VoiceState | null>(null);
@@ -103,8 +104,8 @@ function Index() {
       >
         <span className="island-ring-frame" aria-hidden="true"><span className="island-ring-spin" /></span>
         <div className="flex h-10 items-center gap-3 px-3">
-          <img src={notchCharacter} alt="Orange assistant character" className="h-8 w-8 shrink-0 object-contain" />
-          <span className="flex-1 truncate text-xs font-medium text-muted-foreground">{stateLabel[activeVoice]}</span>
+          <NotchMascot onGreeting={setGreeting} />
+          <span className="flex-1 truncate text-xs font-medium text-muted-foreground" aria-live="polite">{greeting ?? stateLabel[activeVoice]}</span>
           {open && (
             <Button variant="ghost" size="icon"
               onClick={(e) => { e.stopPropagation(); setOpen(false); }}
