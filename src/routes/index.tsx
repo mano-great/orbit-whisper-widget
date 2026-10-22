@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { AudioLines, ChevronUp, Mic, MicOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import notchCharacter from "@/assets/notch-character.png";
 import { useMicLevel } from "@/lib/use-mic-level";
 import { subscribeTextStream, subscribeVoiceState, type VoiceState } from "@/lib/island-bridge";
 
@@ -92,7 +93,7 @@ function Index() {
         onClick={() => !open && setOpen(true)}
         className="island island-ring overflow-hidden text-foreground"
         style={{
-          width: open ? 380 : 190,
+          width: open ? 380 : 240,
           maxWidth: "100%",
           height: open ? 460 : 40,
           borderRadius: open ? 32 : 999,
@@ -102,7 +103,7 @@ function Index() {
       >
         <span className="island-ring-frame" aria-hidden="true"><span className="island-ring-spin" /></span>
         <div className="flex h-10 items-center gap-3 px-3">
-          <Avatar state={activeVoice} />
+          <img src={notchCharacter} alt="Orange assistant character" className="h-8 w-8 shrink-0 object-contain" />
           <span className="flex-1 truncate text-xs font-medium text-muted-foreground">{stateLabel[activeVoice]}</span>
           {open && (
             <Button variant="ghost" size="icon"
