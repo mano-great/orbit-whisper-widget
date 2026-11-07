@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { AudioLines, ChevronUp, Mic, MicOff } from "lucide-react";
+import { AudioLines, ChevronUp, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ChatComposer, FileChip, type Attachment, type ChatSubmission } from "@/components/chat-composer";
 import { NotchMascot } from "@/components/notch-mascot";
 import { useMicLevel } from "@/lib/use-mic-level";
 import { subscribeTextStream, subscribeVoiceState, type VoiceState } from "@/lib/island-bridge";
@@ -23,7 +24,7 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-type Msg = { id: number; role: "user" | "ai"; text: string };
+type Msg = { id: number; role: "user" | "ai"; text: string; attachments?: Attachment[] };
 
 const seed: Msg[] = [
   { id: 1, role: "user", text: "What's on my calendar today?" },
@@ -50,6 +51,10 @@ function Avatar({ state }: { state: VoiceState }) {
 
 function Index() {
   const [open, setOpen] = useState(false);
+  const [dragging, setDragging] = useState(false);
+  const [attachments, setAttachments] = useState<Attachment[]>([]);
+  const [localSent, setLocalSent] = useState(false);
+  const dragDepth = useRef(0);
   const [greeting, setGreeting] = useState<string | null>(null);
   const [voice, setVoice] = useState<VoiceState>("idle");
   const [voiceMode, setVoiceMode] = useState(false);
@@ -83,29 +88,41 @@ function Index() {
 
   useEffect(() => {
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: "smooth" });
-  }, [msgs, open]);
+  }, [msgs, open, attachments]);
 
-  const spring = "cubic-bezier(0.34, 1.56, 0.64, 1)";
+  const addFiles = (files: File[]) => {
+    if (files.length === 0) return;
+    setAttachments((current) => [...current, ...files.map((file) => ({ id: crypto.randomUUID(), file }))]);
+    setOpen(true);
+    setVoiceMode(false);
+    setPreviewVoice(null);
+  };
+  const submit = ({ text, attachments: sentFiles }: ChatSubmission) => {
+    setMsgs((current) => [...current, { id: Date.now(), role: "user", text, attachments: sentFiles }]);
+    setAttachments([]);
+    setVoiceMode(false);
+    setPreviewVoice(null);
+    setLocalSent(true);
+  };
 
   return (
     <main className="flex min-h-screen justify-center px-3 pt-6">
       <div
         ref={islandRef}
         onClick={() => !open && setOpen(true)}
-        className="island island-ring overflow-hidden text-foreground"
-        style={{
-          width: open ? 380 : 240,
-          maxWidth: "100%",
-          height: open ? 460 : 40,
-          borderRadius: open ? 32 : 999,
-          transition: `width .55s ${spring}, height .6s ${spring}, border-radius .5s ${spring}`,
-          cursor: open ? "default" : "pointer",
-        }}
+        onDragEnter={(event) => { if (!Array.from(event.dataTransfer.types).includes("Files")) return; event.preventDefault(); dragDepth.current += 1; setDragging(true); }}
+        onDragOver={(event) => { if (Array.from(event.dataTransfer.types).includes("Files")) { event.preventDefault(); event.dataTransfer.dropEffect = "copy"; } }}
+        onDragLeave={(event) => { event.preventDefault(); dragDepth.current = Math.max(0, dragDepth.current - 1); if (dragDepth.current === 0) setDragging(false); }}
+        onDrop={(event) => { event.preventDefault(); dragDepth.current = 0; setDragging(false); addFiles(Array.from(event.dataTransfer.files)); }}
+        className="island island-ring widget-shell overflow-hidden text-foreground"
+        data-open={open}
+        data-dragging={dragging}
+        aria-label="Island chat widget"
       >
         <span className="island-ring-frame" aria-hidden="true"><span className="island-ring-spin" /></span>
-        <div className="flex h-10 items-center gap-3 px-3">
+        <div className="flex h-10 shrink-0 items-center gap-2 px-3">
           <NotchMascot onGreeting={setGreeting} aiSpeaking={activeVoice === "speaking"} />
-          <span className="flex-1 truncate text-xs font-medium text-muted-foreground" aria-live="polite">{greeting ?? stateLabel[activeVoice]}</span>
+          <Button variant="ghost" className="widget-heading min-w-0 flex-1 justify-start px-0 text-xs font-medium text-muted-foreground" aria-label={open ? "Chat is expanded" : "Expand chat"} onClick={() => setOpen(true)}><span className="truncate" aria-live="polite">{greeting ?? stateLabel[activeVoice]}</span></Button>
           {open && (
             <Button variant="ghost" size="icon"
               onClick={(e) => { e.stopPropagation(); setOpen(false); }}
@@ -119,9 +136,8 @@ function Index() {
         </div>
 
         <div
-          className="flex h-[calc(100%-2.5rem)] flex-col"
+          className="widget-content flex h-[calc(100%-2.5rem)] flex-col"
           inert={!open}
-          style={{ opacity: open ? 1 : 0, transform: open ? "translateY(0)" : "translateY(-12px)", transition: "opacity .35s ease .15s, transform .5s ease .1s" }}
         >
           {voiceMode ? (
             <div className="voice-stage flex min-h-0 flex-1 flex-col items-center justify-center gap-5" data-state={activeVoice}>
@@ -132,19 +148,21 @@ function Index() {
           ) : (
           <div ref={listRef} className="min-h-0 flex-1 space-y-2.5 overflow-y-auto px-4 pb-3 pt-2 [scrollbar-width:none]">
             {msgs.map((m) => (
-              <div key={m.id} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
-                <p className={`max-w-[80%] rounded-2xl px-3.5 py-2 text-[13px] leading-relaxed ${m.role === "user" ? "rounded-br-md bg-bubble-user" : "rounded-bl-md bg-bubble-ai"}`}>
-                  {m.text}
-                </p>
+               <div key={m.id} className={`chat-message flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
+                 <div className={`min-w-0 max-w-[85%] rounded-2xl px-3.5 py-2 text-[13px] leading-relaxed ${m.role === "user" ? "rounded-br-md bg-bubble-user" : "rounded-bl-md bg-bubble-ai"}`}>
+                   {m.text && <p className="whitespace-pre-wrap break-words">{m.text}</p>}
+                   {m.attachments?.map((attachment) => <FileChip key={attachment.id} attachment={attachment} />)}
+                 </div>
               </div>
             ))}
           </div>
           )}
-          <div className="flex shrink-0 items-center justify-between gap-2 border-t px-4 py-3 text-[11px] text-muted-foreground">
-            <span className="flex items-center gap-2"><AudioLines className="h-3.5 w-3.5" />Local voice stream</span>
-            <Button variant={voiceMode ? "secondary" : "ghost"} size="icon" className="h-8 w-8 rounded-full" aria-label={voiceMode ? "Turn off voice mode" : "Turn on voice mode"} title={voiceMode ? "Turn off voice mode" : "Turn on voice mode"} aria-pressed={voiceMode} onClick={() => { setVoiceMode(!voiceMode); setPreviewVoice(null); }}>{voiceMode ? <MicOff /> : <Mic />}</Button>
+          <ChatComposer attachments={attachments} onFiles={addFiles} onRemove={(id) => setAttachments((current) => current.filter((attachment) => attachment.id !== id))} onSubmit={submit} voiceMode={voiceMode} onVoiceToggle={() => { setVoiceMode(!voiceMode); setPreviewVoice(null); }} />
+          <div className="flex shrink-0 items-center gap-2 px-4 pb-3 pt-1 text-[10px] text-muted-foreground" role="status">
+            <AudioLines className="h-3 w-3 shrink-0" /><span>{localSent ? "Added locally · AI sending not connected" : "Local voice stream"}</span>
           </div>
         </div>
+        {dragging && <div className="file-drop-overlay" role="status"><Upload className="size-5" /><span>Drop files</span></div>}
       </div>
     </main>
   );
