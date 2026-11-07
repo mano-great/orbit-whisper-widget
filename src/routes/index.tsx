@@ -1,11 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useReducer, useRef, useState } from "react";
 import { AudioLines, ChevronUp, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ChatComposer, FileChip, type Attachment, type ChatSubmission } from "@/components/chat-composer";
 import { NotchMascot } from "@/components/notch-mascot";
 import { useMicLevel } from "@/lib/use-mic-level";
 import { subscribeTextStream, subscribeVoiceState, type VoiceState } from "@/lib/island-bridge";
+import { speakingCaption, updateSpeechCaption } from "@/lib/speech-caption";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -65,23 +66,31 @@ function Index() {
   const [msgs, setMsgs] = useState<Msg[]>(seed);
   const streaming = useRef<number | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
+  const [caption, dispatchCaption] = useReducer(updateSpeechCaption, { text: "", complete: true });
+  const captionRef = useRef<HTMLSpanElement>(null);
+  const spokenText = speakingCaption(activeVoice, caption);
+  const headingText = spokenText ?? greeting ?? stateLabel[activeVoice];
+
+  useEffect(() => {
+    const element = captionRef.current;
+    if (element) element.scrollLeft = spokenText ? element.scrollWidth : 0;
+  }, [headingText, spokenText, open]);
 
   useEffect(() => {
     const offV = subscribeVoiceState((state) => {
       setVoice(state);
       setPreviewVoice(null);
+      if (state === "thinking" || state === "listening") dispatchCaption({ type: "reset" });
     });
     const offT = subscribeTextStream(
-      (t) =>
-        setMsgs((m) => {
-          if (streaming.current == null) {
-            const id = Date.now();
-            streaming.current = id;
-            return [...m, { id, role: "ai", text: t }];
-          }
-          return m.map((x) => (x.id === streaming.current ? { ...x, text: x.text + t } : x));
-        }),
-      () => { streaming.current = null; },
+      (t) => {
+        dispatchCaption({ type: "token", text: t });
+        const startsReply = streaming.current == null;
+        const id = streaming.current ?? Date.now();
+        streaming.current = id;
+        setMsgs((m) => startsReply ? [...m, { id, role: "ai", text: t }] : m.map((x) => x.id === id ? { ...x, text: x.text + t } : x));
+      },
+      () => { streaming.current = null; dispatchCaption({ type: "done" }); },
     );
     return () => { offV(); offT(); };
   }, []);
@@ -122,7 +131,7 @@ function Index() {
         <span className="island-ring-frame" aria-hidden="true"><span className="island-ring-spin" /></span>
         <div className="flex h-10 shrink-0 items-center gap-2 px-3">
           <NotchMascot onGreeting={setGreeting} aiSpeaking={activeVoice === "speaking"} />
-          <Button variant="ghost" className="widget-heading min-w-0 flex-1 justify-start px-0 text-xs font-medium text-muted-foreground" aria-label={open ? "Chat is expanded" : "Expand chat"} onClick={() => setOpen(true)}><span className="truncate" aria-live="polite">{greeting ?? stateLabel[activeVoice]}</span></Button>
+          <Button variant="ghost" className="widget-heading min-w-0 flex-1 justify-start px-0 text-xs font-medium text-muted-foreground" aria-label={open ? "Chat is expanded" : "Expand chat"} onClick={() => setOpen(true)}><span ref={captionRef} className="block min-w-0 overflow-hidden whitespace-nowrap" aria-live="polite" title={headingText}>{headingText}</span></Button>
           {open && (
             <Button variant="ghost" size="icon"
               onClick={(e) => { e.stopPropagation(); setOpen(false); }}
