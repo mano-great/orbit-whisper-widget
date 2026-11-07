@@ -1,12 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useReducer, useRef, useState } from "react";
-import { AudioLines, ChevronUp, Upload } from "lucide-react";
+import { useEffect, useReducer, useRef, useState, type CSSProperties } from "react";
+import { AudioLines, ChevronUp, Upload, Grip } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ChatComposer, FileChip, type Attachment, type ChatSubmission } from "@/components/chat-composer";
 import { NotchMascot } from "@/components/notch-mascot";
 import { useMicLevel } from "@/lib/use-mic-level";
 import { subscribeTextStream, subscribeVoiceState, type VoiceState } from "@/lib/island-bridge";
 import { speakingCaption, updateSpeechCaption } from "@/lib/speech-caption";
+import { clampWidgetSize } from "@/lib/widget-size";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -52,6 +53,14 @@ function Avatar({ state }: { state: VoiceState }) {
 
 function Index() {
   const [open, setOpen] = useState(false);
+  const [size, setSize] = useState<{ width: number; height: number } | null>(null);
+  const [resizing, setResizing] = useState(false);
+  const resizeStart = useRef<{ x: number; y: number; width: number; height: number } | null>(null);
+  useEffect(() => {
+    const fit = () => setSize((current) => current ? clampWidgetSize(current.width, current.height, window.innerWidth, window.innerHeight) : null);
+    window.addEventListener("resize", fit);
+    return () => window.removeEventListener("resize", fit);
+  }, []);
   const [dragging, setDragging] = useState(false);
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [localSent, setLocalSent] = useState(false);
@@ -125,6 +134,8 @@ function Index() {
         onDrop={(event) => { event.preventDefault(); dragDepth.current = 0; setDragging(false); addFiles(Array.from(event.dataTransfer.files)); }}
         className="island island-ring widget-shell overflow-hidden text-foreground"
         data-open={open}
+        data-resizing={resizing}
+        style={size ? { "--expanded-width": `${size.width}px`, "--expanded-height": `${size.height}px` } as CSSProperties : undefined}
         data-dragging={dragging}
         aria-label="Island chat widget"
       >
@@ -172,6 +183,31 @@ function Index() {
           </div>
         </div>
         {dragging && <div className="file-drop-overlay" role="status"><Upload className="size-5" /><span>Drop files</span></div>}
+        {open && <Button variant="ghost" size="icon" className="widget-resize-grip" aria-label="Resize expanded window" title="Resize expanded window" onClick={(event) => event.stopPropagation()}
+          onPointerDown={(event) => {
+            if (event.button !== 0) return;
+            const rect = islandRef.current?.getBoundingClientRect();
+            if (!rect) return;
+            event.preventDefault(); event.stopPropagation();
+            event.currentTarget.setPointerCapture(event.pointerId);
+            resizeStart.current = { x: event.clientX, y: event.clientY, width: rect.width, height: rect.height };
+            setResizing(true);
+          }}
+          onPointerMove={(event) => {
+            const start = resizeStart.current;
+            if (!start) return;
+            setSize(clampWidgetSize(start.width + (event.clientX - start.x) * 2, start.height + event.clientY - start.y, window.innerWidth, window.innerHeight));
+          }}
+          onPointerUp={(event) => { resizeStart.current = null; setResizing(false); if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId); }}
+          onLostPointerCapture={() => { resizeStart.current = null; setResizing(false); }}
+          onKeyDown={(event) => {
+            if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key)) return;
+            event.preventDefault();
+            const rect = islandRef.current?.getBoundingClientRect();
+            if (!rect) return;
+            const step = event.shiftKey ? 40 : 10;
+            setSize(clampWidgetSize(rect.width + (event.key === "ArrowRight" ? step : event.key === "ArrowLeft" ? -step : 0), rect.height + (event.key === "ArrowDown" ? step : event.key === "ArrowUp" ? -step : 0), window.innerWidth, window.innerHeight));
+          }}><Grip /></Button>}
       </div>
     </main>
   );
